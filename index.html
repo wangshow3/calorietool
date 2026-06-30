@@ -128,10 +128,25 @@
             flex:1;
             min-width:120px;
         }
-        .met-hint {
-            font-size: 14px;
-            color: #666;
-            margin-top: 5px;
+        .met-desc-box {
+            background:#e8f0fe;
+            padding:10px 14px;
+            border-radius:6px;
+            margin:8px 0 16px;
+            font-size:14px;
+            line-height:1.6;
+        }
+        .warn-tip {
+            color:#d13232;
+            font-size:14px;
+            margin:6px 0;
+        }
+        .count-hint {
+            background:#e8f0fe;
+            padding:8px 12px;
+            border-radius:6px;
+            margin:8px 0;
+            font-size:15px;
         }
         .ref-box{
             background:#fff;
@@ -147,6 +162,7 @@
             font-size:13px;
             color:#666;
             margin:4px 0;
+            line-height:1.5;
         }
         .total-intake-show{
             background:#ffebcc;
@@ -197,33 +213,25 @@
             font-size: 19px;
             margin-top: 12px;
         }
-        /* MET参考表格 */
-        .met-table-box {
-            background: #fff;
-            padding: 22px;
-            border-radius: 10px;
+        /* 膳食建议板块样式 */
+        .diet-suggest {
+            background:#f0f7ff;
+            border:1px solid #2374d1;
+            border-radius:12px;
+            padding:24px;
+            margin-top:30px;
         }
-        .met-table-box h3 {
-            margin-top: 0;
+        .diet-suggest h3 {
+            color:#19549c;
+            margin-top:0;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
+        .diet-suggest p {
+            line-height:1.7;
+            font-size:15px;
         }
-        th, td {
-            border: 1px solid #e0e6ef;
-            padding: 9px 12px;
-            text-align: center;
-        }
-        th {
-            background: #e6f2ff;
-        }
-        .tip-text {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #555;
-            line-height: 1.8;
+        .diet-suggest ul {
+            padding-left:20px;
+            line-height:1.75;
         }
     </style>
 </head>
@@ -238,12 +246,12 @@
         </div>
         <div class="formula-card">
             <strong>2. 单项活动热量消耗</strong>
-            <p>单项运动能耗 = MET代谢 × 体重(kg) × 运动时长(h)</p>
-            <p>全天运动总消耗 = 所有运动单项消耗累加总和</p>
+            <p>单项活动能耗 = MET代谢当量 × 体重(kg) × 活动时长(h)</p>
+            <p>全天活动总消耗 = 所有活动单项消耗累加总和</p>
         </div>
         <div class="formula-card">
             <strong>3. 每日总消耗 TDE（全天全部热量支出）</strong>
-            <p>TDE = BMR×非活动占比 + 全天运动总消耗 + 食物热效应（总消耗×10%）</p>
+            <p>TDE = BMR×非活动占比 + 全天活动总消耗 + 食物热效应（总消耗×10%）</p>
         </div>
         <div class="formula-card key-formula">
             <strong>4. 减脂唯一核心：热量缺口公式（重中之重）</strong>
@@ -280,17 +288,30 @@
                 <input type="number" id="height" min="120" placeholder="例 168">
             </div>
             <div class="row">
-                <label>全天静坐躺卧占比（久坐默认0.8）</label>
+                <label>全天静坐躺卧占比（0~1，包含睡觉、久坐办公、刷手机等静态时间）</label>
                 <input type="number" id="restRatio" min="0" max="1" step="0.01" value="0.8">
+                <div class="count-hint" id="timeLimitHint">
+                    提示：当前静态占比0.8，全天可活动最大时长 = (1-0.8)×24 = 4.8小时
+                </div>
+                <div class="small-tip">静态时长+所有主动活动时长合计不能超过24小时</div>
             </div>
 
-            <h4>每日多项运动（可添加多条自动累加）</h4>
+            <h4>每日多项主动活动（通勤/家务/健身，静态躺坐统一填写上方占比）</h4>
+            <!-- MET通俗解释 -->
+            <div class="met-desc-box">
+                <strong>什么是MET？</strong>
+                MET叫代谢当量，用来衡量活动消耗强度，数值越大同等时间消耗热量越多；
+                静坐不动基准为1MET，快走3.8MET、慢跑7.8MET、跳绳10.2MET。
+            </div>
             <div class="btn-group">
-                <button class="add-btn" id="addSportBtn">+ 添加一组运动</button>
-                <button class="clear-btn" id="clearSportBtn">清空全部运动</button>
+                <button class="add-btn" id="addSportBtn">+ 添加一组活动</button>
+                <button class="clear-btn" id="clearSportBtn">清空全部活动</button>
+            </div>
+            <div class="count-hint" id="sportTotalHint">
+                当前所有活动总时长：0.00h | 允许最大活动时长：4.80h
             </div>
             <div id="sportList"></div>
-            <div class="met-hint">所有运动在点击计算时自动累加</div>
+            <div class="small-tip">下拉按上班族一天时间轴划分：通勤办公、居家家务、专项健身；睡觉/久坐开车无需在此添加</div>
         </div>
 
         <!-- 右侧：全天饮食热量摄入（收入） -->
@@ -304,18 +325,22 @@
             <div class="row">
                 <label>早餐热量（kcal）</label>
                 <input type="number" id="breakfast" min="0" max="2000" placeholder="参考：300~500">
+                <div class="small-tip">清淡减脂约300kcal（鸡蛋+无糖豆浆+全麦面包）；正常饱腹约400kcal（包子+牛奶）；煎饼/油条等高油款接近500kcal</div>
             </div>
             <div class="row">
                 <label>午餐热量（kcal）</label>
                 <input type="number" id="lunch" min="0" max="2000" placeholder="参考：500~700">
+                <div class="small-tip">减脂轻食约500kcal（杂粮饭+青菜+瘦肉）；食堂一荤一素约600kcal；炸鸡/红烧盖浇重油外卖可达700kcal以上</div>
             </div>
             <div class="row">
                 <label>晚餐热量（kcal）</label>
                 <input type="number" id="dinner" min="0" max="2000" placeholder="参考：400~600">
+                <div class="small-tip">减脂清淡约400kcal（蔬菜+少量鱼虾，不吃主食）；家常少量米饭约500kcal；火锅/烧烤聚餐600kcal以上</div>
             </div>
             <div class="row">
                 <label>零食/水果/饮料加餐总热量（kcal）</label>
                 <input type="number" id="snack" min="0" max="1500" placeholder="奶茶、坚果、水果全部汇总">
+                <div class="small-tip">低卡水果50~150kcal；饼干/坚果/蛋糕200~600kcal；全糖奶茶/可乐单杯150~400kcal</div>
             </div>
             <div class="total-intake-show">
                 全天摄入合计（点击计算后更新）：<span id="totalIntakeShow">--</span> kcal
@@ -330,97 +355,71 @@
     <div id="resultPanel" class="result-panel">
         <h3>热量收支计算结果</h3>
         <div class="result-item" id="bmrText">基础代谢BMR：-- kcal</div>
-        <div class="result-item" id="totalSportText">全天运动累加总消耗：-- kcal</div>
+        <div class="result-item" id="totalSportText">全天活动累加总消耗：-- kcal</div>
         <div class="result-item" id="tdeText">每日总消耗TDE：-- kcal</div>
         <div class="result-item" id="eatText">全天饮食总摄入：-- kcal</div>
         <div class="result-item diff-big" id="diffText">热量差值（消耗-摄入）：-- kcal</div>
-        <div class="state-desc" id="stateTip">请填写全部信息后点击上方绿色计算按钮</div>
+        <div class="state-desc" id="stateTip">请填写全部信息后点击绿色计算按钮</div>
     </div>
 
-    <!-- 官方MET参考表 -->
-    <div class="met-table-box">
-        <h3>附录6 官方MET活动强度参考（取自《成人肥胖食养指南2024》67-68页）</h3>
-        <table>
-            <tr>
-                <th>活动类型</th>
-                <th>具体行为</th>
-                <th>MET值</th>
-                <th>强度等级</th>
-            </tr>
-            <tr><td>静态</td><td>静坐、刷手机、办公打字</td><td>1.3</td><td>静态</td></tr>
-            <tr><td>低强度家务</td><td>拖地、叠衣服、洗碗</td><td>2.6</td><td>低强度</td></tr>
-            <tr><td>日常步行</td><td>4km/h慢走</td><td>3.3</td><td>中强度</td></tr>
-            <tr><td>减脂快走</td><td>5km/h快走</td><td>3.8</td><td>中强度</td></tr>
-            <tr><td>广场舞/太极</td><td>24式太极拳、广场舞</td><td>4.5</td><td>中强度</td></tr>
-            <tr><td>慢跑</td><td>8km/h慢跑</td><td>7.8</td><td>高强度</td></tr>
-            <tr><td>跳绳</td><td>每分钟100次单摇</td><td>10.2</td><td>高强度</td></tr>
-        </table>
-        <div class="tip-text">
-            <strong>使用说明：</strong>
-            1. 左侧可添加多条不同运动，添加后选择运动、填写时长；
-            2. 右侧分4餐填写，系统汇总全天摄入；
-            3. 全部填写完毕点击绿色一键计算按钮；
-            4. 只有总消耗大于总摄入，形成热量缺口才能减脂；
-            5. 本工具仅膳食参考，慢病、孕产妇、老年人请遵专业人员方案。
-        </div>
+    <!-- 新增：《中国居民膳食指南》健康饮食合理建议 -->
+    <div class="diet-suggest">
+        <h3>📌 科学减脂膳食建议（依据《中国居民膳食指南》）</h3>
+        <p><strong>核心原则：严禁极端节食，减脂依靠温和热量缺口+均衡膳食，保护基础代谢与身体健康。</strong></p>
+        <ul>
+            <li><strong>拒绝节食减重</strong>：女性每日摄入不要低于1200大卡、男性不低于1500大卡；长期极低热量饮食会降低基础代谢、脱发、月经紊乱、乏力反弹，反而更容易长胖。</li>
+            <li><strong>温和控制热量缺口</strong>：每日300~700大卡缺口为健康区间，不要追求快速减重，每月减重2~4kg是人体可适应的安全速度。</li>
+            <li><strong>三餐均衡搭配，不跳过任何一餐</strong>
+                <ul>
+                    <li>主食：替换一半精制米面为杂粮、薯类，每餐一拳分量，维持血糖稳定；</li>
+                    <li>蛋白质：每餐手掌大小瘦肉/鱼虾/鸡蛋/豆制品，充足蛋白保护肌肉、延长饱腹感；</li>
+                    <li>蔬菜：每日不少于500g，绿叶蔬菜占一半以上，多吃低卡高纤维食材。</li>
+                </ul>
+            </li>
+            <li><strong>控制添加糖与油脂</strong>：少喝奶茶、碳酸饮料、糕点油炸食品；日常烹饪少油少盐，减少隐形热量摄入。</li>
+            <li><strong>上班族适配运动方案</strong>：优先利用通勤步行、办公室短时站立走动；每周搭配3次专项运动（快走、慢跑、球类、家务均可），动静结合提升每日总消耗。</li>
+            <li><strong>饮水与作息辅助</strong>每日1500~1700ml白开水，少喝含糖饮品；保证7~8小时睡眠，熬夜会升高食欲激素，更容易暴饮暴食。</li>
+            <li><strong>长期维持思路</strong>减脂结束后不要立刻恢复暴饮暴食，缓慢缩小热量缺口直至收支平衡，养成可持续的饮食活动习惯，避免体重反弹。</li>
+        </ul>
     </div>
 
     <script>
-        // 运动MET数据源
+        // 按上班族全天时间轴划分三大板块活动列表
         const sportMetData = [
-            {group:"静态行为 ≤1.5MET", list:[
-                {name:"安静躺着",met:1.2},
-                {name:"安静坐着/刷手机",met:1.3},
-                {name:"坐姿读书",met:1.4},
-                {name:"坐姿打字办公",met:1.7},
-                {name:"安静站立",met:1.6}
-            ]},
-            {group:"低强度 1.6~2.9MET", list:[
-                {name:"叠/熨/洗衣服",met:2.2},
-                {name:"拖地",met:2.6},
-                {name:"铺床整理房间",met:2.7},
-                {name:"擦地板打扫",met:2.8},
-                {name:"慢速步行3km/h",met:2.9},
-                {name:"平板支撑",met:2.8},
-                {name:"瑜伽",met:3.1}
-            ]},
-            {group:"中等强度 3.0~5.9MET", list:[
-                {name:"步行4km/h",met:3.3},
-                {name:"快走5km/h",met:3.8},
-                {name:"负重步行4kg",met:4.5},
-                {name:"骑行10km/h",met:3.6},
-                {name:"骑行12km/h",met:3.9},
-                {name:"骑行13km/h",met:4.4},
-                {name:"骑行15km/h",met:5.5},
-                {name:"手推车购物",met:3.8},
-                {name:"手提购物篮",met:4.3},
-                {name:"慢跑5km/h",met:4.8},
-                {name:"慢跑6km/h",met:6.1},
-                {name:"民族广场舞",met:5.5},
-                {name:"八段锦",met:3.2},
-                {name:"五禽戏",met:3.5},
-                {name:"太极柔力球",met:3.7},
-                {name:"24式太极拳",met:4.5},
-                {name:"太极剑32式",met:3.5},
-                {name:"排球",met:4.1},
-                {name:"足球传接球",met:4.7},
-                {name:"乒乓球",met:5.7},
-                {name:"篮球",met:6.1}
-            ]},
-            {group:"高强度 ≥6.0MET", list:[
-                {name:"慢跑7km/h",met:6.5},
-                {name:"慢跑8km/h",met:7.8},
-                {name:"慢跑9km/h",met:8.2},
-                {name:"慢速登山",met:6.1},
-                {name:"中速登山",met:8.7},
-                {name:"快速登山",met:17.2},
-                {name:"有氧健身操",met:7.3},
-                {name:"拉丁舞",met:7.0},
-                {name:"芭蕾舞",met:9.8},
-                {name:"羽毛球",met:9.8},
-                {name:"网球",met:10.1},
-                {name:"跳绳100~130次/分",met:10.2}
-            ]}
+            {
+                group:"板块1：日间通勤 & 办公室零散走动",
+                list:[
+                    {name:"步行通勤（配速20′/km 慢走3km/h）",met:2.9},
+                    {name:"快走通勤（配速12′~15′/km 4~5km/h）",met:3.8},
+                    {name:"骑行通勤（10~15km/h）",met:4.4},
+                    {name:"负重通勤（背包/手提重物4kg步行）",met:4.5},
+                    {name:"办公室零散走动（倒水、如厕、短时站立）",met:2.2}
+                ]
+            },
+            {
+                group:"板块2：居家轻度家务 & 舒缓放松",
+                list:[
+                    {name:"居家全套家务（洗衣/拖地/收拾房间）",met:2.6},
+                    {name:"饭后休闲散步（配速20′/km）",met:2.9},
+                    {name:"瑜伽、全身舒缓拉伸",met:3.1},
+                    {name:"养生舒缓运动（八段锦/太极/柔力球）",met:4.0},
+                    {name:"广场舞、饭后轻量健身操",met:4.5}
+                ]
+            },
+            {
+                group:"板块3：专门健身专项运动（刻意燃脂锻炼）",
+                list:[
+                    {name:"慢速慢跑（配速10′~12′/km 5~6km/h）",met:5.5},
+                    {name:"快速慢跑（配速6′40″~8′34″/km 7~9km/h）",met:7.5},
+                    {name:"登山徒步（平缓/陡坡户外爬山）",met:9.0},
+                    {name:"高强度有氧操、拉丁舞",met:7.2},
+                    {name:"芭蕾/力量舞蹈",met:9.8},
+                    {name:"休闲球类（乒乓球、排球、休闲传接足球）",met:5.0},
+                    {name:"对抗竞技球类（羽毛球、网球）",met:10.0},
+                    {name:"休闲低对抗篮球",met:6.1},
+                    {name:"跳绳100~130次/分钟",met:10.2}
+                ]
+            }
         ];
 
         // DOM元素
@@ -437,12 +436,36 @@
         const stateTip = document.getElementById('stateTip');
         const refEatDom = document.getElementById('refEat');
         const totalIntakeShow = document.getElementById('totalIntakeShow');
+        const restRatioInput = document.getElementById('restRatio');
+        const timeLimitHint = document.getElementById('timeLimitHint');
+        const sportTotalHint = document.getElementById('sportTotalHint');
 
-        // 生成单条运动条目
+        // 更新静态占比对应的活动时长上限提示
+        function updateTimeHint(){
+            const restRatio = Number(restRatioInput.value || 0);
+            const maxSportHour = (1 - restRatio) * 24;
+            timeLimitHint.innerText = `提示：当前静态占比${restRatio.toFixed(2)}，全天可活动最大时长 = (1-${restRatio})×24 = ${maxSportHour.toFixed(2)}小时`;
+            updateSportTotalShow();
+        }
+
+        // 实时更新所有活动累加时长
+        function updateSportTotalShow(){
+            const restRatio = Number(restRatioInput.value || 0);
+            const maxSportHour = (1 - restRatio) * 24;
+            let totalHour = 0;
+            const sportItems = sportList.querySelectorAll('.sport-item');
+            sportItems.forEach(item=>{
+                const h = Number(item.querySelector('.sportHour').value || 0);
+                totalHour += h;
+            });
+            sportTotalHint.innerText = `当前所有活动总时长：${totalHour.toFixed(2)}h | 允许最大活动时长：${maxSportHour.toFixed(2)}h`;
+        }
+
+        // 生成活动条目下拉
         function createSportItem(){
             const wrap = document.createElement('div');
             wrap.className = "sport-item";
-            let optHtml = `<option value="">选择运动</option>`;
+            let optHtml = `<option value="">选择日常活动/健身项目</option>`;
             sportMetData.forEach(g=>{
                 optHtml += `<optgroup label="${g.group}">`;
                 g.list.forEach(s=>{
@@ -455,32 +478,42 @@
                 <input class="sportHour" type="number" step="0.01" min="0" max="8" placeholder="时长h">
                 <button class="del-btn">删除</button>
             `;
-            wrap.querySelector('.del-btn').onclick = function(){ wrap.remove(); };
+            wrap.querySelector('.del-btn').onclick = function(){
+                wrap.remove();
+                updateSportTotalShow();
+            };
+            wrap.querySelector('.sportHour').addEventListener('input', updateSportTotalShow);
             sportList.appendChild(wrap);
+            updateSportTotalShow();
         }
-        addSportBtn.onclick = createSportItem;
-        clearSportBtn.onclick = function(){ sportList.innerHTML = ""; };
 
-        // 绑定计算按钮点击事件
+        // 绑定按钮事件
+        addSportBtn.onclick = createSportItem;
+        clearSportBtn.onclick = function(){
+            sportList.innerHTML = "";
+            updateSportTotalShow();
+        };
+        restRatioInput.addEventListener('input', updateTimeHint);
         calcBtn.onclick = function(){ computeAll(); };
 
-        // 核心计算函数
+        // 核心计算函数（含食物热效应、时长校验）
         function computeAll(){
-            // 读取基础信息，空值自动转为数字0
+            // 读取基础信息
             const gender = document.getElementById('gender').value;
             const age = Number(document.getElementById('age').value || 0);
             const weight = Number(document.getElementById('weight').value || 0);
             const height = Number(document.getElementById('height').value || 0);
             const restRatio = Number(document.getElementById('restRatio').value || 0);
-            // 四餐摄入
+            // 三餐+零食摄入
             const breakfast = Number(document.getElementById('breakfast').value || 0);
             const lunch = Number(document.getElementById('lunch').value || 0);
             const dinner = Number(document.getElementById('dinner').value || 0);
             const snack = Number(document.getElementById('snack').value || 0);
             const totalIntake = breakfast + lunch + dinner + snack;
 
-            // 累加全部运动消耗
+            // 累加全部活动时长、消耗
             let sumSportCal = 0;
+            let totalSportHour = 0;
             const sportItems = sportList.querySelectorAll('.sport-item');
             sportItems.forEach(item=>{
                 const sel = item.querySelector('.sportSel');
@@ -489,17 +522,26 @@
                 const met = Number(opt.dataset.met || 0);
                 if(hour > 0 && met > 0){
                     sumSportCal += met * weight * hour;
+                    totalSportHour += hour;
                 }
             });
 
-            // 基础数据合法性校验
-            if(age < 18 || weight <=0 || height <=0 || restRatio <0 || restRatio > 1){
+            // 时长超限拦截
+            const maxAllowHour = (1 - restRatio) * 24;
+            if(totalSportHour > maxAllowHour){
+                alert(`当前活动总时长${totalSportHour.toFixed(2)}小时，超过允许上限${maxAllowHour.toFixed(2)}小时，请删减活动时长！`);
                 resetResult();
-                stateTip.innerHTML = "⚠️ 请正确填写年龄(≥18)、体重、身高、静坐占比";
                 return;
             }
 
-            // 1、计算BMR
+            // 基础信息校验
+            if(age < 18 || weight <=0 || height <=0 || restRatio <0 || restRatio > 1){
+                resetResult();
+                stateTip.innerHTML = "⚠️ 请正确填写年龄≥18、体重、身高、静态占比0~1";
+                return;
+            }
+
+            // 计算BMR
             let BMR;
             if(gender === 'female'){
                 BMR = 655 + 9.5 * weight + 1.8 * height - 4.7 * age;
@@ -507,13 +549,13 @@
                 BMR = 66 + 13.7 * weight + 5.0 * height - 6.8 * age;
             }
 
-            // 2、计算TDE（修复：补充食物热效应TE）
+            // 计算TDE 包含10%食物热效应
             const restConsume = BMR * restRatio;
             const baseConsume = restConsume + sumSportCal;
             const TEF = baseConsume * 0.1;
             const TDE = baseConsume + TEF;
 
-            // 推荐摄入区间
+            // 减脂推荐摄入区间
             let minEat = TDE - 700;
             let maxEat = TDE - 300;
             const minLine = gender === 'female' ? 1200 : 1500;
@@ -523,38 +565,34 @@
             // 热量差值
             const diff = TDE - totalIntake;
 
-            // 页面赋值渲染
+            // 页面渲染数值
             totalIntakeShow.textContent = totalIntake.toFixed(0);
             bmrText.textContent = "基础代谢BMR：" + BMR.toFixed(1) + " kcal";
-            totalSportText.textContent = "全天运动累加总消耗：" + sumSportCal.toFixed(1) + " kcal";
+            totalSportText.textContent = "全天活动累加总消耗：" + sumSportCal.toFixed(1) + " kcal";
             tdeText.textContent = "每日总消耗TDE：" + TDE.toFixed(1) + " kcal";
             eatText.textContent = "全天饮食总摄入：" + totalIntake.toFixed(1) + " kcal";
             diffText.textContent = "热量差值（消耗-摄入）：" + diff.toFixed(1) + " kcal";
 
-            // 状态样式与文字
+            // 状态配色提示
             resultPanel.className = "result-panel";
             if(diff > 10){
                 resultPanel.classList.add("deficit-good");
-                if(diff >=300 && diff <=700){
-                    stateTip.innerHTML = "✅ 标准健康热量缺口，每月稳定瘦2~4kg，推荐维持";
-                }else if(diff >700){
-                    stateTip.innerHTML = "⚠️ 缺口过大，易流失肌肉、诱发暴食反弹";
-                }else{
-                    stateTip.innerHTML = "✅ 小幅热量缺口，适合小基数缓慢减脂";
-                }
+                if(diff >=300 && diff <=700) stateTip.innerHTML = "✅ 标准健康热量缺口，每月稳定瘦2~4kg";
+                else if(diff >700) stateTip.innerHTML = "⚠️ 缺口过大，易流失肌肉、暴食反弹，请适当增加三餐热量，不要节食";
+                else stateTip.innerHTML = "✅ 小幅热量缺口，适合小基数缓慢减脂";
             }else if(diff < -10){
                 resultPanel.classList.add("surplus-bad");
-                stateTip.innerHTML = "❌ 热量盈余，长期堆积脂肪，需减少饮食或增加运动";
+                stateTip.innerHTML = "❌ 热量盈余，长期堆积脂肪，减少高糖高油零食或增加日常活动时长";
             }else{
                 resultPanel.classList.add("balance-normal");
-                stateTip.innerHTML = "➡ 热量持平，体重不变，无法减脂";
+                stateTip.innerHTML = "➡ 热量持平，体重不变，想要减脂可小幅扩大300~700大卡温和缺口";
             }
         }
 
-        // 重置空白
+        // 清空结果文字
         function resetResult(){
             bmrText.textContent = "基础代谢BMR：-- kcal";
-            totalSportText.textContent = "全天运动累加总消耗：-- kcal";
+            totalSportText.textContent = "全天活动累加总消耗：-- kcal";
             tdeText.textContent = "每日总消耗TDE：-- kcal";
             eatText.textContent = "全天饮食总摄入：-- kcal";
             diffText.textContent = "热量差值（消耗-摄入）：-- kcal";
@@ -563,6 +601,9 @@
             totalIntakeShow.textContent = "--";
             resultPanel.className = "result-panel";
         }
+
+        // 页面加载初始化
+        updateTimeHint();
     </script>
 </body>
-</html> 
+</html>
