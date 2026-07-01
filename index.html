@@ -302,6 +302,7 @@
             <div class="row">
                 <label>性别</label>
                 <select id="gender">
+                    <option value="">请选择性别</option>
                     <option value="male">男性</option>
                     <option value="female">女性</option>
                 </select>
@@ -564,14 +565,43 @@
         };
         calcBtn.onclick = function(){ computeAll(); };
 
-        // 核心计算函数（含食物热效应、时长校验）
+        // 核心计算函数（增加完整表单校验，缺项弹窗提示）
         function computeAll(){
-            // 读取基础信息
-            const gender = document.getElementById('gender').value;
-            const age = Number(document.getElementById('age').value || 0);
-            const weight = Number(document.getElementById('weight').value || 0);
-            const height = Number(document.getElementById('height').value || 0);
+            // 获取基础信息
+            const gender = document.getElementById('gender').value.trim();
+            const ageVal = document.getElementById('age').value.trim();
+            const weightVal = document.getElementById('weight').value.trim();
+            const heightVal = document.getElementById('height').value.trim();
+
+            let missing = [];
+            // 校验性别
+            if(gender === "") missing.push("性别（请选择男/女）");
+            // 校验年龄
+            if(ageVal === "" || Number(ageVal) < 18 || Number(ageVal) > 100){
+                missing.push("年龄（必填，范围18-100周岁）");
+            }
+            // 校验体重
+            if(weightVal === "" || Number(weightVal) <= 0){
+                missing.push("体重（kg，不能为空）");
+            }
+            // 校验身高
+            if(heightVal === "" || Number(heightVal) < 120){
+                missing.push("身高（cm，不能为空，最低120）");
+            }
+
+            // 存在缺失/非法数据，弹窗提示并终止计算
+            if(missing.length > 0){
+                alert("请先完善以下必填基础信息才能计算：\n" + missing.join("\n"));
+                resetResult();
+                return;
+            }
+
+            // 转数字
+            const age = Number(ageVal);
+            const weight = Number(weightVal);
+            const height = Number(heightVal);
             const restRatio = Number(restRatioInput.value);
+
             // 三餐+零食摄入
             const breakfast = Number(document.getElementById('breakfast').value || 0);
             const lunch = Number(document.getElementById('lunch').value || 0);
@@ -599,13 +629,6 @@
             if(totalHourFloat > maxAllowHour){
                 alert(`当前活动总时长${totalHourFloat.toFixed(2)}小时，超过全天24小时，请删减活动时长！`);
                 resetResult();
-                return;
-            }
-
-            // 基础信息校验
-            if(age < 18 || weight <=0 || height <=0 || restRatio <0 || restRatio > 1){
-                resetResult();
-                stateTip.innerHTML = "⚠️ 请正确填写年龄≥18、体重、身高，活动时长合计不可超过24小时";
                 return;
             }
 
