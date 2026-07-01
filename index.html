@@ -18,16 +18,33 @@
         }
         /* 顶部公式区块 */
         .formula-top {
-            background: #e6f2ff;
-            border: 2px solid #2374d1;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
             border-radius: 12px;
             padding: 24px;
             margin-bottom: 32px;
+            text-align:center;
         }
         .formula-top h2 {
             color: #19549c;
             margin-top: 0;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
+        }
+        .title-note{
+            font-size:14px;
+            color:#000;
+            margin-bottom:16px;
+        }
+        .formula-card-bottom {
+            background: #e6f2ff;
+            border: 2px solid #2374d1;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top:30px;
+        }
+        .formula-card-bottom h3{
+            color:#19549c;
+            margin-top:0;
         }
         .formula-card {
             background: #ffffff;
@@ -35,10 +52,7 @@
             padding: 14px 18px;
             margin: 12px 0;
             line-height: 1.75;
-        }
-        .key-formula {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
+            text-align:left;
         }
         .key-text {
             color: #c0392b;
@@ -88,6 +102,10 @@
             border-radius: 7px;
             font-size: 16px;
         }
+        input:read-only {
+            background-color: #eee;
+            color: #555;
+        }
         input:focus, select:focus {
             outline: none;
             border-color: #2374d1;
@@ -136,8 +154,13 @@
             font-size:14px;
             line-height:1.6;
         }
-        .warn-tip {
+        .warn-red {
             color:#d13232;
+            font-size:14px;
+            margin:6px 0;
+        }
+        .warn-orange {
+            color:#e67700;
             font-size:14px;
             margin:6px 0;
         }
@@ -147,6 +170,23 @@
             border-radius:6px;
             margin:8px 0;
             font-size:15px;
+        }
+        .progress-wrap {
+            width:100%;
+            height:20px;
+            background:#ddd;
+            border-radius:10px;
+            overflow:hidden;
+            margin:10px 0;
+            display:flex;
+        }
+        .prog-active {
+            height:100%;
+            background:#2374d1;
+        }
+        .prog-rest {
+            height:100%;
+            background:#cccccc;
         }
         .ref-box{
             background:#fff;
@@ -181,6 +221,10 @@
             font-weight: bold;
             margin:20px 0;
             cursor:pointer;
+        }
+        .calc-main-btn:disabled {
+            background:#999;
+            cursor:not-allowed;
         }
         /* 结果面板 */
         .result-panel {
@@ -236,30 +280,17 @@
     </style>
 </head>
 <body>
-    <!-- 顶部全套公式区 -->
+    <!-- 顶部仅保留热量缺口核心公式 -->
     <div class="formula-top">
-        <h2>一、官方全套热量计算公式（《成人肥胖食养指南2024》）</h2>
+        <h2>热量计算器</h2>
+        <div class="title-note">（算法来自卫健委《成人肥胖食养指南2024》）</div>
         <div class="formula-card">
-            <strong>1. 基础代谢率 BMR（静息全天基础消耗）</strong>
-            <p>女性：BMR = 655 + 9.5×体重(kg) + 1.8×身高(cm) − 4.7×年龄(岁)</p>
-            <p>男性：BMR = 66 + 13.7×体重(kg) + 5.0×身高(cm) − 6.8×年龄(岁)</p>
-        </div>
-        <div class="formula-card">
-            <strong>2. 单项活动热量消耗</strong>
-            <p>单项活动能耗 = MET代谢当量 × 体重(kg) × 活动时长(h)</p>
-            <p>全天活动总消耗 = 所有活动单项消耗累加总和</p>
-        </div>
-        <div class="formula-card">
-            <strong>3. 每日总消耗 TDE（全天全部热量支出）</strong>
-            <p>TDE = BMR×非活动占比 + 全天活动总消耗 + 食物热效应（总消耗×10%）</p>
-        </div>
-        <div class="formula-card key-formula">
-            <strong>4. 减脂唯一核心：热量缺口公式（重中之重）</strong>
+            <strong>减脂唯一核心：热量缺口公式（重中之重）</strong>
             <p>热量差值 = 每日总消耗(TDE) − 全天饮食总摄入</p>
             <p><span class="key-text">✅ 差值＞0 = 热量缺口 → 只有这种情况才能减脂</span></p>
             <p>❌ 差值＜0 = 热量盈余 → 持续长胖</p>
             <p>➡ 差值≈0 = 热量平衡 → 体重维持不变</p>
-            <p>补充：减掉1kg纯脂肪，累计需要7700大卡总热量缺口；健康每日缺口300~700大卡，每月减2~4kg</p>
+            <p>补充：健康每日缺口300~700大卡，每月减 2~4kg。减重依靠温和热量缺口搭配均衡合理膳食实现，严禁极端节食，长期极低热量摄入会损伤代谢、极易反弹。</p>
         </div>
     </div>
 
@@ -288,12 +319,9 @@
                 <input type="number" id="height" min="120" placeholder="例 168">
             </div>
             <div class="row">
-                <label>全天静坐躺卧占比（0~1，包含睡觉、久坐办公、刷手机等静态时间）</label>
-                <input type="number" id="restRatio" min="0" max="1" step="0.01" value="0.8">
-                <div class="count-hint" id="timeLimitHint">
-                    提示：当前静态占比0.8，全天可活动最大时长 = (1-0.8)×24 = 4.8小时
-                </div>
-                <div class="small-tip">静态时长+所有主动活动时长合计不能超过24小时</div>
+                <label>自动推算：全天静坐躺卧占比（不可手动修改）</label>
+                <input type="number" id="restRatio" readonly value="1.00" step="0.01">
+                <div class="small-tip">计算规则：静态占比 = 1 - 全部主动活动总时长 ÷ 24；活动填得越多，静态占比越低</div>
             </div>
 
             <h4>每日多项主动活动（通勤/家务/健身，静态躺坐统一填写上方占比）</h4>
@@ -308,10 +336,15 @@
                 <button class="clear-btn" id="clearSportBtn">清空全部活动</button>
             </div>
             <div class="count-hint" id="sportTotalHint">
-                当前所有活动总时长：0.00h | 允许最大活动时长：4.80h
+                当前所有主动活动总时长：0小时0分 | 自动推算静态休息总时长：24小时0分
             </div>
+            <div class="progress-wrap">
+                <div class="prog-active" id="progActive" style="width:0%"></div>
+                <div class="prog-rest" id="progRest" style="width:100%"></div>
+            </div>
+            <div id="warnText"></div>
             <div id="sportList"></div>
-            <div class="small-tip">下拉按上班族一天时间轴划分：通勤办公、居家家务、专项健身；睡觉/久坐开车无需在此添加</div>
+            <div class="small-tip">下拉按上班族一天时间轴划分：通勤办公、居家家务、专项健身；睡觉/久坐开车无需在此添加，系统自动折算静态占比</div>
         </div>
 
         <!-- 右侧：全天饮食热量摄入（收入） -->
@@ -325,22 +358,22 @@
             <div class="row">
                 <label>早餐热量（kcal）</label>
                 <input type="number" id="breakfast" min="0" max="2000" placeholder="参考：300~500">
-                <div class="small-tip">清淡减脂约300kcal（鸡蛋+无糖豆浆+全麦面包）；正常饱腹约400kcal（包子+牛奶）；煎饼/油条等高油款接近500kcal</div>
+                <div class="small-tip">清淡减脂约300kcal（1个50g水煮鸡蛋+250ml无糖纯豆浆+1片40g全麦吐司）；正常饱腹约400kcal（1个100g鲜肉包子+整盒250ml纯牛奶）；煎饼/油条等高油款接近500kcal（1份杂粮煎饼或2根50g油条）</div>
             </div>
             <div class="row">
                 <label>午餐热量（kcal）</label>
                 <input type="number" id="lunch" min="0" max="2000" placeholder="参考：500~700">
-                <div class="small-tip">减脂轻食约500kcal（杂粮饭+青菜+瘦肉）；食堂一荤一素约600kcal；炸鸡/红烧盖浇重油外卖可达700kcal以上</div>
+                <div class="small-tip">减脂轻食约500kcal（熟杂粮饭80g+绿叶蔬菜200g+瘦鸡胸/牛肉100g）；食堂一荤一素约600kcal（熟白米饭100g+清炒素菜200g+少油瘦肉80g）；炸鸡/红烧盖浇重油外卖可达700kcal以上（油炸肉类120g+重油汤汁+足量白米饭）</div>
             </div>
             <div class="row">
                 <label>晚餐热量（kcal）</label>
                 <input type="number" id="dinner" min="0" max="2000" placeholder="参考：400~600">
-                <div class="small-tip">减脂清淡约400kcal（蔬菜+少量鱼虾，不吃主食）；家常少量米饭约500kcal；火锅/烧烤聚餐600kcal以上</div>
+                <div class="small-tip">减脂清淡约400kcal（绿叶蔬菜250g+鱼虾80g+熟全谷物/杂豆60g）；家常少量米饭约500kcal（熟白米饭90g+荤素炒菜各一份）；火锅/烧烤聚餐600kcal以上（大量肉类、丸子、蘸料搭配主食）</div>
             </div>
             <div class="row">
                 <label>零食/水果/饮料加餐总热量（kcal）</label>
                 <input type="number" id="snack" min="0" max="1500" placeholder="奶茶、坚果、水果全部汇总">
-                <div class="small-tip">低卡水果50~150kcal；饼干/坚果/蛋糕200~600kcal；全糖奶茶/可乐单杯150~400kcal</div>
+                <div class="small-tip">低卡水果单份200g约50~150kcal；坚果单份仅10g（4~6颗巴旦木）单份60~90kcal；饼干蛋糕单份30g（2片饼干/小块蛋糕）单份120~220kcal，大量食用合计可达200~600kcal；全糖奶茶/可乐中杯500ml单杯150~400kcal</div>
             </div>
             <div class="total-intake-show">
                 全天摄入合计（点击计算后更新）：<span id="totalIntakeShow">--</span> kcal
@@ -359,10 +392,10 @@
         <div class="result-item" id="tdeText">每日总消耗TDE：-- kcal</div>
         <div class="result-item" id="eatText">全天饮食总摄入：-- kcal</div>
         <div class="result-item diff-big" id="diffText">热量差值（消耗-摄入）：-- kcal</div>
-        <div class="state-desc" id="stateTip">请填写全部信息后点击绿色计算按钮</div>
+        <div class="state-desc" id="stateTip">请填写完整信息后点击绿色计算按钮</div>
     </div>
 
-    <!-- 新增：《中国居民膳食指南》健康饮食合理建议 -->
+    <!-- 《中国居民膳食指南》健康饮食合理建议 -->
     <div class="diet-suggest">
         <h3>📌 科学减脂膳食建议（依据《中国居民膳食指南》）</h3>
         <p><strong>核心原则：严禁极端节食，减脂依靠温和热量缺口+均衡膳食，保护基础代谢与身体健康。</strong></p>
@@ -381,6 +414,26 @@
             <li><strong>饮水与作息辅助</strong>每日1500~1700ml白开水，少喝含糖饮品；保证7~8小时睡眠，熬夜会升高食欲激素，更容易暴饮暴食。</li>
             <li><strong>长期维持思路</strong>减脂结束后不要立刻恢复暴饮暴食，缓慢缩小热量缺口直至收支平衡，养成可持续的饮食活动习惯，避免体重反弹。</li>
         </ul>
+    </div>
+
+    <!-- 移至页面最底部：前3条完整计算公式 -->
+    <div class="formula-card-bottom">
+        <h3>完整计算逻辑公式</h3>
+        <div class="formula-card">
+            <strong>1. 基础代谢率 BMR（静息全天基础消耗）</strong>
+            <p>女性：BMR = 655 + 9.5×体重(kg) + 1.8×身高(cm) − 4.7×年龄(岁)</p>
+            <p>男性：BMR = 66 + 13.7×体重(kg) + 5.0×身高(cm) − 6.8×年龄(岁)</p>
+        </div>
+        <div class="formula-card">
+            <strong>2. 单项活动热量消耗</strong>
+            <p>单项活动能耗 = MET代谢当量 × 体重(kg) × 活动时长(h)</p>
+            <p>全天活动总消耗 = 所有活动单项消耗累加总和</p>
+        </div>
+        <div class="formula-card">
+            <strong>3. 每日总消耗 TDE（全天全部热量支出）</strong>
+            <p>TDE = BMR×静态休息占比 + 全天活动总消耗 + 食物热效应（总消耗×10%）</p>
+            <p class="warn-red">重要说明：静态休息占比无需手动填写，系统根据你填写的主动活动自动计算</p>
+        </div>
     </div>
 
     <script>
@@ -437,31 +490,47 @@
         const refEatDom = document.getElementById('refEat');
         const totalIntakeShow = document.getElementById('totalIntakeShow');
         const restRatioInput = document.getElementById('restRatio');
-        const timeLimitHint = document.getElementById('timeLimitHint');
         const sportTotalHint = document.getElementById('sportTotalHint');
+        const warnText = document.getElementById('warnText');
+        const progActive = document.getElementById('progActive');
+        const progRest = document.getElementById('progRest');
 
-        // 更新静态占比对应的活动时长上限提示
-        function updateTimeHint(){
-            const restRatio = Number(restRatioInput.value || 0);
-            const maxSportHour = (1 - restRatio) * 24;
-            timeLimitHint.innerText = `提示：当前静态占比${restRatio.toFixed(2)}，全天可活动最大时长 = (1-${restRatio})×24 = ${maxSportHour.toFixed(2)}小时`;
-            updateSportTotalShow();
-        }
-
-        // 实时更新所有活动累加时长
-        function updateSportTotalShow(){
-            const restRatio = Number(restRatioInput.value || 0);
-            const maxSportHour = (1 - restRatio) * 24;
-            let totalHour = 0;
+        // 计算总活动时长、自动更新静态占比、进度条、提示文字
+        function calcAllActiveTime() {
+            let totalHourFloat = 0;
             const sportItems = sportList.querySelectorAll('.sport-item');
             sportItems.forEach(item=>{
                 const h = Number(item.querySelector('.sportHour').value || 0);
-                totalHour += h;
-            });
-            sportTotalHint.innerText = `当前所有活动总时长：${totalHour.toFixed(2)}h | 允许最大活动时长：${maxSportHour.toFixed(2)}h`;
+                totalHourFloat += h;
+            })
+            const totalHour = Math.floor(totalHourFloat);
+            const totalMinRemain = Math.round((totalHourFloat - totalHour) * 60);
+            const restTotalHour = 24 - totalHourFloat;
+            const restHour = Math.floor(restTotalHour);
+            const restMin = Math.round((restTotalHour - restHour) * 60);
+            // 计算占比
+            const activeRatio = totalHourFloat / 24;
+            const restRatio = 1 - activeRatio;
+            restRatioInput.value = restRatio.toFixed(2);
+            // 更新提示文字
+            sportTotalHint.innerText = `当前所有主动活动总时长：${totalHour}小时${totalMinRemain}分 | 自动推算静态休息总时长：${restHour}小时${restMin}分`;
+            // 更新进度条
+            const activePercent = Math.min(activeRatio * 100,100);
+            const restPercent = Math.max(restRatio * 100,0);
+            progActive.style.width = activePercent + "%";
+            progRest.style.width = restPercent + "%";
+            // 超限预警 + 锁定计算按钮
+            calcBtn.disabled = false;
+            warnText.innerHTML = "";
+            if(totalHourFloat > 24) {
+                warnText.innerHTML = `<div class="warn-red">⚠️ 活动总时长超过24小时，请删减时长，无法执行计算</div>`;
+                calcBtn.disabled = true;
+            } else if(totalHourFloat >= 22) {
+                warnText.innerHTML = `<div class="warn-orange">⚠️ 活动时长接近全天24小时，休息时间过少，请核对填写时长是否准确</div>`;
+            }
         }
 
-        // 生成活动条目下拉
+        // 生成原版简洁活动条目（仅下拉+小数小时输入+删除，无复制/时分/模板）
         function createSportItem(){
             const wrap = document.createElement('div');
             wrap.className = "sport-item";
@@ -480,20 +549,19 @@
             `;
             wrap.querySelector('.del-btn').onclick = function(){
                 wrap.remove();
-                updateSportTotalShow();
+                calcAllActiveTime();
             };
-            wrap.querySelector('.sportHour').addEventListener('input', updateSportTotalShow);
+            wrap.querySelector('.sportHour').addEventListener('input', calcAllActiveTime);
             sportList.appendChild(wrap);
-            updateSportTotalShow();
+            calcAllActiveTime();
         }
 
         // 绑定按钮事件
         addSportBtn.onclick = createSportItem;
         clearSportBtn.onclick = function(){
             sportList.innerHTML = "";
-            updateSportTotalShow();
+            calcAllActiveTime();
         };
-        restRatioInput.addEventListener('input', updateTimeHint);
         calcBtn.onclick = function(){ computeAll(); };
 
         // 核心计算函数（含食物热效应、时长校验）
@@ -503,7 +571,7 @@
             const age = Number(document.getElementById('age').value || 0);
             const weight = Number(document.getElementById('weight').value || 0);
             const height = Number(document.getElementById('height').value || 0);
-            const restRatio = Number(document.getElementById('restRatio').value || 0);
+            const restRatio = Number(restRatioInput.value);
             // 三餐+零食摄入
             const breakfast = Number(document.getElementById('breakfast').value || 0);
             const lunch = Number(document.getElementById('lunch').value || 0);
@@ -511,25 +579,25 @@
             const snack = Number(document.getElementById('snack').value || 0);
             const totalIntake = breakfast + lunch + dinner + snack;
 
-            // 累加全部活动时长、消耗
+            // 累加全部活动消耗
             let sumSportCal = 0;
-            let totalSportHour = 0;
+            let totalHourFloat = 0;
             const sportItems = sportList.querySelectorAll('.sport-item');
             sportItems.forEach(item=>{
                 const sel = item.querySelector('.sportSel');
                 const hour = Number(item.querySelector('.sportHour').value || 0);
+                totalHourFloat += hour;
                 const opt = sel.options[sel.selectedIndex];
                 const met = Number(opt.dataset.met || 0);
                 if(hour > 0 && met > 0){
                     sumSportCal += met * weight * hour;
-                    totalSportHour += hour;
                 }
             });
 
             // 时长超限拦截
-            const maxAllowHour = (1 - restRatio) * 24;
-            if(totalSportHour > maxAllowHour){
-                alert(`当前活动总时长${totalSportHour.toFixed(2)}小时，超过允许上限${maxAllowHour.toFixed(2)}小时，请删减活动时长！`);
+            const maxAllowHour = 24;
+            if(totalHourFloat > maxAllowHour){
+                alert(`当前活动总时长${totalHourFloat.toFixed(2)}小时，超过全天24小时，请删减活动时长！`);
                 resetResult();
                 return;
             }
@@ -537,7 +605,7 @@
             // 基础信息校验
             if(age < 18 || weight <=0 || height <=0 || restRatio <0 || restRatio > 1){
                 resetResult();
-                stateTip.innerHTML = "⚠️ 请正确填写年龄≥18、体重、身高、静态占比0~1";
+                stateTip.innerHTML = "⚠️ 请正确填写年龄≥18、体重、身高，活动时长合计不可超过24小时";
                 return;
             }
 
@@ -603,7 +671,7 @@
         }
 
         // 页面加载初始化
-        updateTimeHint();
+        createSportItem();
     </script>
 </body>
 </html>
