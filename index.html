@@ -229,6 +229,7 @@
             font-weight: bold;
             margin:20px 0;
             cursor:pointer;
+            display:none;
         }
         .calc-main-btn:disabled {
             background:#999;
@@ -309,7 +310,7 @@
         <div class="title-note">（算法来自卫健委《成人肥胖食养指南2024》）</div>
         <div class="formula-card">
             <strong>减脂唯一核心：热量缺口公式（重中之重）</strong>
-            <p>热量差值 = 每日总消耗(TDE) − 全天饮食总摄入</p>
+            <p>热量差值 = 每日总消耗(TDE) − 当天总热量摄入</p>
             <p><span class="key-text">✅ 差值＞0 = 热量缺口 → 只有这种情况才能减脂</span></p>
             <p>❌ 差值＜0 = 热量盈余 → 持续长胖</p>
             <p>➡ 差值≈0 = 热量平衡 → 体重维持不变</p>
@@ -346,7 +347,6 @@
             <h3>📤 全天总热量消耗（支出）</h3>
             <p class="small-tip">每日总消耗分为三部分：基础静息消耗 + 日常活动消耗 + 食物消化消耗，下方分模块填写即可</p>
 
-            <!-- 已修改序号：一、每日主动活动消耗 -->
             <div class="consume-sub-title">一、每日主动活动消耗（通勤/家务/健身，需要手动添加）</div>
             <div class="met-desc-box">
                 <strong>什么是MET？</strong>
@@ -360,7 +360,6 @@
             <div id="sportList"></div>
             <div class="small-tip">点击上方按钮新增运动；下拉分三类：通勤办公、居家家务、专项健身；睡觉久坐不用填</div>
 
-            <!-- 已修改序号：二、全天静态休息占比 -->
             <div class="consume-sub-title">二、全天静态休息占比（睡觉/久坐办公自动计算）</div>
             <div class="row">
                 <label>自动推算：全天静坐躺卧占比（不可手动修改）</label>
@@ -383,49 +382,48 @@
         </div>
 
         <div class="intake-card">
-            <h3>📥 全天饮食热量摄入（收入）</h3>
+            <!-- 板块标题修改为：全天总热量摄入（收入） -->
+            <h3>全天总热量摄入（收入）</h3>
             <div class="ref-box">
                 <div class="ref-title">✅ 你的推荐减脂摄入区间：<span id="refEat">-- kcal</span></div>
                 <p class="small-tip">参考逻辑：每日总消耗 - 300~700大卡（健康减脂缺口）</p>
                 <p class="small-tip">底线提醒：女性每日不可低于1200kcal，男性不可低于1500kcal</p>
             </div>
 
-            <!-- 早餐 -->
             <div class="row">
                 <label>早餐总热量（kcal）</label>
                 <input type="number" id="breakfast" min="0" max="2000" placeholder="直接填入早餐合计热量">
                 <div class="small-tip">参考：清淡减脂 250~350｜家常早点 300~550｜汉堡套餐600~700</div>
             </div>
 
-            <!-- 午餐 -->
             <div class="row">
                 <label>午餐总热量（kcal）</label>
                 <input type="number" id="lunch" min="0" max="2000" placeholder="直接填入午餐合计热量">
                 <div class="small-tip">参考：减脂轻食 300~550｜食堂一荤二素 550~700｜兰州清汤拉面（无辣油）550~700｜蛋炒饭（少油） 500~700｜重油盖饭 700~900</div>
             </div>
 
-            <!-- 晚餐 -->
             <div class="row">
                 <label>晚餐总热量（kcal）</label>
                 <input type="number" id="dinner" min="0" max="2000" placeholder="直接填入晚餐合计热量">
                 <div class="small-tip">参考：清淡减脂 300~400｜家常荤素搭配 600~1000｜火锅烧烤 800~2000</div>
             </div>
 
-            <!-- 加餐零食 -->
             <div class="row">
                 <label>零食 / 水果 / 饮料加餐总热量（kcal）</label>
                 <input type="number" id="snack" min="0" max="1500" placeholder="奶茶、坚果、水果全部汇总">
                 <div class="small-tip">参考：少量水果 50~150｜一杯奶茶 180~400｜薯片类100g 500-650｜饼干类100g 400-550｜坚果10g 50-80</div>
             </div>
 
-            <div class="total-intake-show">
-                全天摄入合计（点击计算后更新）：<span id="totalIntakeShow">--</span> kcal
-            </div>
+            <!-- 按钮文字简化：一键计算全部热量摄入 -->
+            <button class="card-calc-btn" id="calcFromIntake">一键计算全部热量摄入</button>
 
-            <button class="card-calc-btn" id="calcFromIntake">一键计算全部热量收支</button>
+            <div class="total-intake-show">
+                当天总热量摄入：<span id="totalIntakeShow">--</span> kcal
+            </div>
         </div>
     </div>
 
+    <!-- 底部总计算按钮隐藏 -->
     <button class="calc-main-btn" id="calcBtn">点击一键计算热量收支 & 减脂缺口</button>
 
     <div id="resultPanel" class="result-panel">
@@ -435,7 +433,7 @@
         <div class="result-item" id="tdeText">每日总消耗TDE：-- kcal</div>
         <div class="result-item" id="eatText">全天饮食总摄入：-- kcal</div>
         <div class="result-item diff-big" id="diffText">热量差值（消耗-摄入）：-- kcal</div>
-        <div class="state-desc" id="stateTip">请填写完整信息后点击绿色计算按钮</div>
+        <div class="state-desc" id="stateTip">请分别计算热量支出、热量摄入后查看完整收支</div>
     </div>
 
     <div class="diet-suggest">
@@ -546,6 +544,12 @@
         const dinnerInput = document.getElementById('dinner');
         const snackInput = document.getElementById('snack');
 
+        // 全局缓存计算结果
+        let cacheTDE = null;
+        let cacheBMR = null;
+        let cacheSportTotal = null;
+        let cacheTotalIntake = null;
+
         function calcAllActiveTime() {
             let totalHourFloat = 0;
             sportList.querySelectorAll('.sport-item').forEach(item=>{
@@ -601,6 +605,47 @@
             calcAllActiveTime();
         }
 
+        function refreshResultPanel(){
+            resultPanel.className = "result-panel";
+            // 消耗数据存在
+            if(cacheTDE !== null){
+                bmrText.textContent = "基础代谢BMR：" + cacheBMR.toFixed(1) + " kcal";
+                totalSportText.textContent = "全天活动累加总消耗：" + cacheSportTotal.toFixed(1) + " kcal";
+                tdeText.textContent = "每日总消耗TDE：" + cacheTDE.toFixed(1) + " kcal";
+            }else{
+                bmrText.textContent = "基础代谢BMR：-- kcal";
+                totalSportText.textContent = "全天活动累加总消耗：-- kcal";
+                tdeText.textContent = "每日总消耗TDE：-- kcal";
+            }
+            // 摄入数据存在
+            if(cacheTotalIntake !== null){
+                eatText.textContent = "全天饮食总摄入：" + cacheTotalIntake.toFixed(1) + " kcal";
+            }else{
+                eatText.textContent = "全天饮食总摄入：-- kcal";
+            }
+            // 两者都有才计算差值与评价
+            if(cacheTDE !== null && cacheTotalIntake !== null){
+                const diff = cacheTDE - cacheTotalIntake;
+                diffText.textContent = "热量差值（消耗-摄入）：" + diff.toFixed(1) + " kcal";
+                if(diff > 10){
+                    resultPanel.classList.add("deficit-good");
+                    if(diff >=300 && diff <=700) stateTip.innerHTML = "✅ 标准健康热量缺口，每月稳定瘦2~4kg";
+                    else if(diff >700) stateTip.innerHTML = "⚠️ 缺口过大，易流失肌肉、暴食反弹，请适当增加三餐热量，不要节食";
+                    else stateTip.innerHTML = "✅ 小幅热量缺口，适合小基数缓慢减脂";
+                }else if(diff < -10){
+                    resultPanel.classList.add("surplus-bad");
+                    stateTip.innerHTML = "❌ 热量盈余，长期堆积脂肪，减少高糖高油零食或增加日常活动时长";
+                }else{
+                    resultPanel.classList.add("balance-normal");
+                    stateTip.innerHTML = "➡ 热量持平，体重不变，想要减脂可小幅扩大300~700大卡温和缺口";
+                }
+            }else{
+                diffText.textContent = "热量差值（消耗-摄入）：-- kcal";
+                stateTip.innerHTML = "请分别计算热量支出、热量摄入后查看完整收支";
+            }
+        }
+
+        // 计算热量支出
         function calcOnlyConsume(){
             const gender = document.getElementById('gender').value.trim();
             const ageVal = document.getElementById('age').value.trim();
@@ -616,6 +661,8 @@
             if(missing.length>0){
                 alert("计算热量支出需要完善以下信息：\n"+missing.join("\n"));
                 consumeOutText.innerText = "当日总热量支出：-- kcal";
+                cacheTDE = null;
+                refreshResultPanel();
                 return;
             }
             const age = Number(ageVal);
@@ -634,6 +681,8 @@
             if(totalHourFloat>24){
                 alert(`活动总时长${totalHourFloat.toFixed(2)}小时超过24小时，请修改`);
                 consumeOutText.innerText = "当日总热量支出：-- kcal";
+                cacheTDE = null;
+                refreshResultPanel();
                 return;
             }
             let BMR = gender === 'female'
@@ -644,91 +693,51 @@
             const TEF = baseConsume * 0.1;
             const TDE = baseConsume + TEF;
             consumeOutText.innerText = `当日总热量支出：${Math.round(TDE)} kcal`;
-        }
-
-        function computeAll(){
-            const gender = document.getElementById('gender').value.trim();
-            const ageVal = document.getElementById('age').value.trim();
-            const weightVal = document.getElementById('weight').value.trim();
-            const heightVal = document.getElementById('height').value.trim();
-            let missing = [];
-            if(!gender) missing.push("性别（请选择男/女）");
-            if(!ageVal || Number(ageVal)<18 || Number(ageVal)>100) missing.push("年龄（必填，范围18-100周岁）");
-            if(!weightVal || Number(weightVal)<=0) missing.push("体重（kg，不能为空）");
-            if(!heightVal || Number(heightVal)<120) missing.push("身高（cm，不能为空，最低120）");
-            if(missing.length>0){
-                alert("请先完善以下必填基础信息才能计算：\n"+missing.join("\n"));
-                resetResult();
-                return;
-            }
-            const age = Number(ageVal);
-            const weight = Number(weightVal);
-            const height = Number(heightVal);
-            const restRatio = Number(restRatioInput.value);
-            const breakfast = Number(breakfastInput.value||0);
-            const lunch = Number(lunchInput.value||0);
-            const dinner = Number(dinnerInput.value||0);
-            const snack = Number(snackInput.value||0);
-            const totalIntake = breakfast + lunch + dinner + snack;
-            let sumSportCal = 0;
-            let totalHourFloat = 0;
-            sportList.querySelectorAll('.sport-item').forEach(item=>{
-                const sel = item.querySelector('.sportSel');
-                const h = Number(item.querySelector('.sportHour').value||0);
-                totalHourFloat += h;
-                const met = Number(sel.options[sel.selectedIndex].dataset.met||0);
-                if(h>0 && met>0) sumSportCal += met*weight*h;
-            });
-            if(totalHourFloat > 24){
-                alert(`当前活动总时长${totalHourFloat.toFixed(2)}小时，超过全天24小时，请删减活动时长！`);
-                resetResult();
-                return;
-            }
-            let BMR = gender === 'female'
-                ? 655 + 9.5*weight + 1.8*height -4.7*age
-                : 66 + 13.7*weight +5.0*height -6.8*age;
-            const restConsume = BMR * restRatio;
-            const baseConsume = restConsume + sumSportCal;
-            const TEF = baseConsume * 0.1;
-            const TDE = baseConsume + TEF;
-            consumeOutText.innerText = `当日总热量支出：${Math.round(TDE)} kcal`;
+            // 存入缓存
+            cacheBMR = BMR;
+            cacheSportTotal = sumSportCal;
+            cacheTDE = TDE;
+            // 更新推荐摄入区间
             let minEat = TDE - 700;
             let maxEat = TDE - 300;
             const minLine = gender === 'female' ? 1200 : 1500;
             if(minEat < minLine) minEat = minLine;
             refEatDom.textContent = Math.round(minEat) + " ~ " + Math.round(maxEat) + " kcal";
-            const diff = TDE - totalIntake;
-            totalIntakeShow.textContent = totalIntake.toFixed(0);
-            bmrText.textContent = "基础代谢BMR：" + BMR.toFixed(1) + " kcal";
-            totalSportText.textContent = "全天活动累加总消耗：" + sumSportCal.toFixed(1) + " kcal";
-            tdeText.textContent = "每日总消耗TDE：" + TDE.toFixed(1) + " kcal";
-            eatText.textContent = "全天饮食总摄入：" + totalIntake.toFixed(1) + " kcal";
-            diffText.textContent = "热量差值（消耗-摄入）：" + diff.toFixed(1) + " kcal";
-            resultPanel.className = "result-panel";
-            if(diff > 10){
-                resultPanel.classList.add("deficit-good");
-                if(diff >=300 && diff <=700) stateTip.innerHTML = "✅ 标准健康热量缺口，每月稳定瘦2~4kg";
-                else if(diff >700) stateTip.innerHTML = "⚠️ 缺口过大，易流失肌肉、暴食反弹，请适当增加三餐热量，不要节食";
-                else stateTip.innerHTML = "✅ 小幅热量缺口，适合小基数缓慢减脂";
-            }else if(diff < -10){
-                resultPanel.classList.add("surplus-bad");
-                stateTip.innerHTML = "❌ 热量盈余，长期堆积脂肪，减少高糖高油零食或增加日常活动时长";
-            }else{
-                resultPanel.classList.add("balance-normal");
-                stateTip.innerHTML = "➡ 热量持平，体重不变，想要减脂可小幅扩大300~700大卡温和缺口";
+            refreshResultPanel();
+        }
+
+        // 计算热量摄入，四项空值校验
+        function calcIntakeOnly(){
+            let missList = [];
+            const b = Number(breakfastInput.value);
+            const l = Number(lunchInput.value);
+            const d = Number(dinnerInput.value);
+            const s = Number(snackInput.value);
+            if(!b || b <=0) missList.push("早餐总热量");
+            if(!l || l <=0) missList.push("午餐总热量");
+            if(!d || d <=0) missList.push("晚餐总热量");
+            if(!s || s <=0) missList.push("零食/水果/饮料加餐总热量");
+            if(missList.length > 0){
+                alert("以下项目未填写有效热量数值，请补充后再计算：\n" + missList.join("\n"));
+                cacheTotalIntake = null;
+                refreshResultPanel();
+                return;
             }
+            const total = b + l + d + s;
+            cacheTotalIntake = total;
+            totalIntakeShow.textContent = total.toFixed(0);
+            refreshResultPanel();
         }
 
         function resetResult(){
-            bmrText.textContent = "基础代谢BMR：-- kcal";
-            totalSportText.textContent = "全天活动累加总消耗：-- kcal";
-            tdeText.textContent = "每日总消耗TDE：-- kcal";
-            eatText.textContent = "全天饮食总摄入：-- kcal";
-            diffText.textContent = "热量差值（消耗-摄入）：-- kcal";
-            stateTip.innerHTML = "请填写完整信息后点击绿色计算按钮";
-            refEatDom.textContent = "-- kcal";
+            cacheTDE = null;
+            cacheBMR = null;
+            cacheSportTotal = null;
+            cacheTotalIntake = null;
+            consumeOutText.innerText = "当日总热量支出：-- kcal";
             totalIntakeShow.textContent = "--";
-            resultPanel.className = "result-panel";
+            refEatDom.textContent = "-- kcal";
+            refreshResultPanel();
         }
 
         // 绑定按钮
@@ -736,11 +745,10 @@
         clearSportBtn.onclick = function(){
             sportList.innerHTML = "";
             calcAllActiveTime();
-            consumeOutText.innerText = "当日总热量支出：-- kcal";
+            resetResult();
         };
         calcFromConsume.onclick = calcOnlyConsume;
-        calcFromIntake.onclick = computeAll;
-        calcBtn.onclick = computeAll;
+        calcFromIntake.onclick = calcIntakeOnly;
     </script>
 </body>
 </html>
